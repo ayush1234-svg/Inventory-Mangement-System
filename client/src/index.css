@@ -35,11 +35,11 @@
   background: #94a3b8;
 }
 
-/* Dedicated Print Styles for Invoices */
+/* Dedicated Print Styles for Invoices - A5 Portrait Specification */
 @media print {
   @page {
+    size: A5 portrait;
     margin: 8mm 10mm;
-    size: auto;
   }
 
   html,
@@ -51,6 +51,9 @@
     width: 100% !important;
     height: auto !important;
     min-height: auto !important;
+    font-size: 10pt !important;
+    line-height: 1.35 !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
   }
 
   /* Completely hide the background app (navbar, pos catalogue, cart, etc.) */
@@ -103,6 +106,46 @@
     border: none !important;
     box-shadow: none !important;
     overflow: visible !important;
+    font-size: 10pt !important;
+  }
+
+  /* Enforce 9-11 pt font sizes on print elements */
+  #invoice-printable-area h1,
+  #invoice-printable-area h2,
+  #invoice-printable-area .invoice-title {
+    font-size: 13pt !important;
+    line-height: 1.2 !important;
+  }
+
+  #invoice-printable-area .invoice-heading {
+    font-size: 11pt !important;
+  }
+
+  #invoice-printable-area .invoice-body,
+  #invoice-printable-area table,
+  #invoice-printable-area td,
+  #invoice-printable-area th {
+    font-size: 9.5pt !important;
+  }
+
+  #invoice-printable-area .invoice-subtext,
+  #invoice-printable-area .invoice-caption {
+    font-size: 9pt !important;
+  }
+
+  #invoice-printable-area .invoice-grand-total {
+    font-size: 11pt !important;
+    font-weight: 700 !important;
+  }
+
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
   }
 
   * {
