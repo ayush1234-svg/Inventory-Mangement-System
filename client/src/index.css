@@ -38,26 +38,77 @@
 /* Dedicated Print Styles for Invoices */
 @media print {
   @page {
-    margin: 12mm;
+    margin: 8mm 10mm;
     size: auto;
   }
 
+  html,
   body {
     background-color: #ffffff !important;
     color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
   }
 
-  .no-print {
+  /* Completely hide the background app (navbar, pos catalogue, cart, etc.) */
+  #root {
     display: none !important;
   }
 
-  .print-only {
+  /* Hide backdrop and modal control buttons */
+  .no-print,
+  .no-print * {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Invoice modal portal rendered directly on body */
+  .invoice-modal-portal {
+    position: static !important;
     display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .invoice-modal-content {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+  }
+
+  #invoice-printable-area {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    overflow: visible !important;
   }
 
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     box-shadow: none !important;
+    text-shadow: none !important;
   }
 }

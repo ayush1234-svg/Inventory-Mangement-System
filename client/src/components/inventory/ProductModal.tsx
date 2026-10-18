@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Loader2, UploadCloud } from 'lucide-react';
 import { Product } from '../../types/index.js';
 import { paiseToRupees, rupeesToPaise } from '../../utils/format.js';
+import { compressImage, formatBytes } from '../../utils/imageCompressor.js';
+import { uploadImage } from '../../services/upload.js';
 import { Button } from '../common/Button.js';
 import { Input } from '../common/Input.js';
 import { Modal } from '../common/Modal.js';
@@ -30,6 +33,11 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [imageMode, setImageMode] = useState<'upload' | 'url'>('upload');
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [uploadStats, setUploadStats] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [purchasePriceRupees, setPurchasePriceRupees] = useState<number | ''>('');
   const [sellingPriceRupees, setSellingPriceRupees] = useState<number | ''>('');
   const [stockQuantity, setStockQuantity] = useState<number | ''>(0);
@@ -46,6 +54,12 @@ export const ProductModal: React.FC<ProductModalProps> = ({
       setBrand(product.brand || '');
       setModel(product.model || '');
       setImageUrl(product.imageUrl || '');
+      setImageMode(
+        product.imageUrl && !product.imageUrl.startsWith('/uploads/') && !product.imageUrl.startsWith('data:')
+          ? 'url'
+          : 'upload'
+      );
+      setUploadStats(null);
       setPurchasePriceRupees(paiseToRupees(product.purchasePrice));
       setSellingPriceRupees(paiseToRupees(product.sellingPrice));
       setStockQuantity(product.stockQuantity ?? 0);
@@ -59,6 +73,8 @@ export const ProductModal: React.FC<ProductModalProps> = ({
       setBrand('');
       setModel('');
       setImageUrl('');
+      setImageMode('upload');
+      setUploadStats(null);
       setPurchasePriceRupees('');
       setSellingPriceRupees('');
       setStockQuantity(10);
@@ -68,6 +84,49 @@ export const ProductModal: React.FC<ProductModalProps> = ({
     }
     setErrors({});
   }, [product, isOpen]);
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingImage(true);
+    setErrors((prev) => ({ ...prev, image: '' }));
+
+    try {
+      // 1. Client-side compression (max 800px, WebP, quality 0.85)
+      const compressed = await compressImage(file);
+      setUploadStats(`${formatBytes(compressed.compressedSize)} (optimized)`);
+
+      // 2. Upload to server
+      const uploadedUrl = await uploadImage(compressed.dataUrl, file.name);
+      setImageUrl(uploadedUrl);
+    } catch (err: any) {
+      setErrors((prev) => ({ ...prev, image: err.message || 'Failed to process image' }));
+    } finally {
+      setIsUploadingImage(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+
+    setIsUploadingImage(true);
+    setErrors((prev) => ({ ...prev, image: '' }));
+
+    try {
+      const compressed = await compressImage(file);
+      setUploadStats(`${formatBytes(compressed.compressedSize)} (optimized)`);
+      const uploadedUrl = await uploadImage(compressed.dataUrl, file.name);
+      setImageUrl(uploadedUrl);
+    } catch (err: any) {
+      setErrors((prev) => ({ ...prev, image: err.message || 'Failed to process image' }));
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
 
   const isPhone = category === 'Smartphones' || customCategory === 'Smartphones';
 
@@ -194,25 +253,152 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           />
         </div>
 
-        {/* Row 3: Product Image URL & Live Preview */}
-        <div className="flex items-start gap-4 p-3 bg-slate-50/80 rounded-lg border border-slate-200">
-          <div className="w-16 h-16 rounded-md bg-white border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center p-1">
-            <ProductImage
-              src={imageUrl}
-              alt={name || 'Preview'}
-              category={category === 'CUSTOM' ? customCategory : category}
-              className="w-full h-full object-contain"
-            />
+        {/* Product Image Section (Device Storage Upload + URL Option) */}
+        <div className="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-700">
+              Product Image
+            </span>
+            <div className="flex items-center gap-1 bg-slate-200/60 p-0.5 rounded-lg text-[11px] font-medium">
+              <button
+                type="button"
+                onClick={() => setImageMode('upload')}
+                className={`px-2.5 py-1 rounded-md transition-colors ${
+                  imageMode === 'upload'
+                    ? 'bg-white text-indigo-700 font-semibold shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Upload from Device
+              </button>
+              <button
+                type="button"
+                onClick={() => setImageMode('url')}
+                className={`px-2.5 py-1 rounded-md transition-colors ${
+                  imageMode === 'url'
+                    ? 'bg-white text-indigo-700 font-semibold shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Image URL
+              </button>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <Input
-              label="Product Image URL (Optional)"
-              placeholder="https://images.unsplash.com/... or direct image link"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              helperText="Paste direct URL to a JPG, PNG, or WebP image"
-            />
-          </div>
+
+          {errors.image && (
+            <div className="p-2 bg-rose-50 border border-rose-200 rounded text-xs text-rose-600 font-medium">
+              {errors.image}
+            </div>
+          )}
+
+          {/* Mode 1: Device Upload (Camera / PC / Mobile Storage) */}
+          {imageMode === 'upload' ? (
+            <div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="hidden"
+                id="product-image-file-input"
+              />
+
+              {imageUrl ? (
+                <div className="flex items-center gap-3 p-2.5 bg-white rounded-lg border border-slate-200">
+                  <div className="w-16 h-16 rounded-md bg-slate-50 border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center p-1">
+                    <ProductImage
+                      src={imageUrl}
+                      alt={name || 'Preview'}
+                      category={category === 'CUSTOM' ? customCategory : category}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold text-slate-900 truncate">Image Attached</p>
+                    <p className="text-[11px] text-slate-500 truncate">
+                      {uploadStats
+                        ? uploadStats
+                        : imageUrl.startsWith('/uploads/')
+                        ? 'Stored on local server'
+                        : 'Image loaded'}
+                    </p>
+                    <div className="flex items-center gap-2 mt-1.5">
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploadingImage}
+                        className="text-xs text-indigo-600 hover:text-indigo-800 font-medium cursor-pointer"
+                      >
+                        Change Photo
+                      </button>
+                      <span className="text-slate-300">•</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setImageUrl('');
+                          setUploadStats(null);
+                        }}
+                        className="text-xs text-rose-600 hover:text-rose-800 font-medium cursor-pointer"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={handleDrop}
+                  className={`border-2 border-dashed rounded-lg p-5 text-center cursor-pointer transition-all ${
+                    isUploadingImage
+                      ? 'border-indigo-400 bg-indigo-50/50 cursor-wait'
+                      : 'border-slate-300 hover:border-indigo-400 hover:bg-indigo-50/20 bg-white'
+                  }`}
+                >
+                  {isUploadingImage ? (
+                    <div className="flex flex-col items-center justify-center py-2 text-indigo-600">
+                      <Loader2 className="w-6 h-6 animate-spin mb-1.5" />
+                      <span className="text-xs font-semibold">Optimizing & Uploading image...</span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-1">
+                      <div className="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center mb-2">
+                        <UploadCloud className="w-5 h-5" />
+                      </div>
+                      <p className="text-xs font-semibold text-slate-800">
+                        Click to browse PC / mobile storage or snap a photo
+                      </p>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        Supports JPG, PNG, WebP (auto-optimized for instant loading)
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ) : (
+            /* Mode 2: External Image URL */
+            <div className="flex items-start gap-3">
+              <div className="w-14 h-14 rounded-md bg-white border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center p-1">
+                <ProductImage
+                  src={imageUrl}
+                  alt={name || 'Preview'}
+                  category={category === 'CUSTOM' ? customCategory : category}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <Input
+                  placeholder="https://images.unsplash.com/... or direct link"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  helperText="Paste any direct web link to an image"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Smartphone-Specific Attributes (Only shown when category is Smartphones) */}

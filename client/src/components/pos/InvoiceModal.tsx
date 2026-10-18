@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { CheckCircle2, Download, Plus, Printer, X } from 'lucide-react';
 import { useSettings } from '../../context/SettingsContext.js';
 import { Sale } from '../../types/index.js';
@@ -26,8 +27,8 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
     window.print();
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto invoice-modal-portal">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs no-print"
@@ -36,7 +37,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
       />
 
       {/* Invoice Container */}
-      <div className="relative w-full max-w-xl rounded-xl bg-white shadow-2xl border border-slate-200 z-10 my-auto overflow-hidden flex flex-col max-h-[92vh]">
+      <div className="relative w-full max-w-xl rounded-xl bg-white shadow-2xl border border-slate-200 z-10 my-auto overflow-hidden flex flex-col max-h-[92vh] invoice-modal-content">
         {/* Modal Top Header (Excluded in Print) */}
         <div className="flex items-center justify-between px-6 py-3.5 bg-slate-900 text-white no-print">
           <div className="flex items-center gap-2">
@@ -221,6 +222,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

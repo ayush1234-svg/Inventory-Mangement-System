@@ -1,15 +1,21 @@
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Request, Response } from 'express';
+import fs from 'fs';
 import helmet from 'helmet';
+import path from 'path';
 import { env } from './config/env.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import apiRouter from './routes/index.js';
 
 const app = express();
 
-// Secure HTTP headers
-app.use(helmet());
+// Secure HTTP headers with cross-origin resource policy for uploaded media
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  })
+);
 
 // CORS configuration for cross-origin credentials (cookies)
 const allowedOrigins = [
@@ -40,10 +46,17 @@ app.use(
   })
 );
 
-// Parsers
+// Parsers (10MB limit to support direct device photo uploads)
 app.use(cookieParser());
-app.use(express.json({ limit: '1mb' }));
-app.use(express.urlencoded({ extended: true, limit: '1mb' }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Static uploads serving
+const uploadsDir = path.join(process.cwd(), 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+app.use('/uploads', express.static(uploadsDir));
 
 // API Routes
 app.use('/api', apiRouter);

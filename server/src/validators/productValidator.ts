@@ -5,7 +5,7 @@ export const createProductSchema = z.object({
   category: z.string().min(1, 'Category is required').trim(),
   brand: z.string().min(1, 'Brand is required').trim(),
   model: z.string().max(100).optional().default(''),
-  imageUrl: z.string().url().or(z.string().length(0)).optional().default(''),
+  imageUrl: z.string().max(2000000).optional().default(''),
   purchasePrice: z.number().int().min(0, 'Purchase price must be >= 0 (in paise)'),
   sellingPrice: z.number().int().min(0, 'Selling price must be >= 0 (in paise)'),
   stockQuantity: z.number().int().min(0, 'Stock quantity must be >= 0').default(0),

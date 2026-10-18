@@ -5,6 +5,7 @@ import productRoutes from './productRoutes.js';
 import reportRoutes from './reportRoutes.js';
 import saleRoutes from './saleRoutes.js';
 import settingsRoutes from './settingsRoutes.js';
+import uploadRoutes from './uploadRoutes.js';
 
 const router = Router();
 
@@ -23,5 +24,6 @@ router.use('/sales', saleRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/reports', reportRoutes);
 router.use('/settings', settingsRoutes);
+router.use('/upload', uploadRoutes);
 
 export default router;
