@@ -4,6 +4,7 @@ import { Product } from '../../types/index.js';
 import { Button } from '../common/Button.js';
 import { Input } from '../common/Input.js';
 import { Modal } from '../common/Modal.js';
+import { ProductImage } from '../common/ProductImage.js';
 import { Select } from '../common/Select.js';
 
 interface StockModalProps {
@@ -92,6 +93,25 @@ export const StockModal: React.FC<StockModalProps> = ({
             {error}
           </div>
         )}
+
+        {/* Product Visual Header */}
+        <div className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-lg">
+          <div className="w-12 h-12 rounded-md bg-white border border-slate-200 p-1 shrink-0 overflow-hidden flex items-center justify-center">
+            <ProductImage
+              src={product.imageUrl}
+              alt={product.name}
+              category={product.category}
+              className="w-full h-full object-contain"
+            />
+          </div>
+          <div className="min-w-0 flex-1">
+            <h4 className="text-xs font-bold text-slate-900 truncate">{product.name}</h4>
+            <p className="text-[11px] text-slate-500">
+              {product.brand} • {product.category}
+              {product.storage && ` • ${product.storage}`}
+            </p>
+          </div>
+        </div>
 
         {/* Current vs New Stock Visual */}
         <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 border border-slate-200 rounded-lg text-center">

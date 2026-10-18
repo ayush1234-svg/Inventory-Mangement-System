@@ -4,6 +4,7 @@ import { paiseToRupees, rupeesToPaise } from '../../utils/format.js';
 import { Button } from '../common/Button.js';
 import { Input } from '../common/Input.js';
 import { Modal } from '../common/Modal.js';
+import { ProductImage } from '../common/ProductImage.js';
 import { Select } from '../common/Select.js';
 
 interface ProductModalProps {
@@ -28,6 +29,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   const [customCategory, setCustomCategory] = useState('');
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const [purchasePriceRupees, setPurchasePriceRupees] = useState<number | ''>('');
   const [sellingPriceRupees, setSellingPriceRupees] = useState<number | ''>('');
   const [stockQuantity, setStockQuantity] = useState<number | ''>(0);
@@ -43,6 +45,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
       setCategory(product.category || 'Smartphones');
       setBrand(product.brand || '');
       setModel(product.model || '');
+      setImageUrl(product.imageUrl || '');
       setPurchasePriceRupees(paiseToRupees(product.purchasePrice));
       setSellingPriceRupees(paiseToRupees(product.sellingPrice));
       setStockQuantity(product.stockQuantity ?? 0);
@@ -55,6 +58,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
       setCustomCategory('');
       setBrand('');
       setModel('');
+      setImageUrl('');
       setPurchasePriceRupees('');
       setSellingPriceRupees('');
       setStockQuantity(10);
@@ -98,6 +102,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
         category: category === 'CUSTOM' ? customCategory.trim() : category,
         brand: brand.trim(),
         model: model.trim(),
+        imageUrl: imageUrl.trim() || undefined,
         purchasePrice: rupeesToPaise(Number(purchasePriceRupees)),
         sellingPrice: rupeesToPaise(Number(sellingPriceRupees)),
         lowStockThreshold: Number(lowStockThreshold),
@@ -187,6 +192,27 @@ export const ProductModal: React.FC<ProductModalProps> = ({
             value={model}
             onChange={(e) => setModel(e.target.value)}
           />
+        </div>
+
+        {/* Row 3: Product Image URL & Live Preview */}
+        <div className="flex items-start gap-4 p-3 bg-slate-50/80 rounded-lg border border-slate-200">
+          <div className="w-16 h-16 rounded-md bg-white border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center p-1">
+            <ProductImage
+              src={imageUrl}
+              alt={name || 'Preview'}
+              category={category === 'CUSTOM' ? customCategory : category}
+              className="w-full h-full object-contain"
+            />
+          </div>
+          <div className="flex-1 min-w-0">
+            <Input
+              label="Product Image URL (Optional)"
+              placeholder="https://images.unsplash.com/... or direct image link"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              helperText="Paste direct URL to a JPG, PNG, or WebP image"
+            />
+          </div>
         </div>
 
         {/* Smartphone-Specific Attributes (Only shown when category is Smartphones) */}

@@ -15,6 +15,7 @@ import { Link } from 'react-router-dom';
 import { PaymentBadge, StockStatusBadge } from '../components/common/Badge.js';
 import { Button } from '../components/common/Button.js';
 import { EmptyState } from '../components/common/EmptyState.js';
+import { ProductImage } from '../components/common/ProductImage.js';
 import { Spinner } from '../components/common/Spinner.js';
 import { useToast } from '../components/common/Toast.js';
 import { StockModal } from '../components/inventory/StockModal.js';
@@ -264,11 +265,21 @@ export const DashboardPage: React.FC = () => {
               <div className="divide-y divide-slate-100">
                 {lowStockProducts.map((prod) => (
                   <div key={prod._id} className="py-2.5 flex items-center justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="text-xs font-semibold text-slate-900 truncate">{prod.name}</p>
-                      <p className="text-[11px] text-slate-500 truncate">
-                        {prod.brand} • {prod.category}
-                      </p>
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-9 h-9 rounded-md bg-slate-50 border border-slate-200 p-1 shrink-0 overflow-hidden flex items-center justify-center">
+                        <ProductImage
+                          src={prod.imageUrl}
+                          alt={prod.name}
+                          category={prod.category}
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-slate-900 truncate">{prod.name}</p>
+                        <p className="text-[11px] text-slate-500 truncate">
+                          {prod.brand} • {prod.category}
+                        </p>
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-3 shrink-0">

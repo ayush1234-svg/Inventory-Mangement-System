@@ -15,6 +15,7 @@ interface SeedProduct {
   model?: string;
   storage?: string;
   color?: string;
+  imageUrl?: string;
   purchasePriceRupees: number;
   sellingPriceRupees: number;
   stockQuantity: number;
@@ -30,6 +31,7 @@ const sampleProducts: SeedProduct[] = [
     model: 'iPhone 15',
     storage: '128GB',
     color: 'Black',
+    imageUrl: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 65000,
     sellingPriceRupees: 71999,
     stockQuantity: 12,
@@ -42,6 +44,7 @@ const sampleProducts: SeedProduct[] = [
     model: 'iPhone 15',
     storage: '256GB',
     color: 'Blue',
+    imageUrl: 'https://images.unsplash.com/photo-1591337676887-a217a6970a8a?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 74000,
     sellingPriceRupees: 81999,
     stockQuantity: 8,
@@ -54,6 +57,7 @@ const sampleProducts: SeedProduct[] = [
     model: 'Galaxy S24',
     storage: '256GB',
     color: 'Onyx Black',
+    imageUrl: 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 68000,
     sellingPriceRupees: 74999,
     stockQuantity: 10,
@@ -66,6 +70,7 @@ const sampleProducts: SeedProduct[] = [
     model: '12R',
     storage: '256GB',
     color: 'Cool Blue',
+    imageUrl: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 38000,
     sellingPriceRupees: 42999,
     stockQuantity: 15,
@@ -78,6 +83,7 @@ const sampleProducts: SeedProduct[] = [
     model: 'Note 13 Pro+',
     storage: '256GB',
     color: 'Fusion Purple',
+    imageUrl: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 27000,
     sellingPriceRupees: 31999,
     stockQuantity: 18,
@@ -90,6 +96,7 @@ const sampleProducts: SeedProduct[] = [
     model: '12 Pro',
     storage: '128GB',
     color: 'Submarine Blue',
+    imageUrl: 'https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 21000,
     sellingPriceRupees: 24999,
     stockQuantity: 2, // LOW STOCK TRIGGER
@@ -102,6 +109,7 @@ const sampleProducts: SeedProduct[] = [
     model: 'V30',
     storage: '128GB',
     color: 'Andaman Blue',
+    imageUrl: 'https://images.unsplash.com/photo-1580910051074-3eb694886505?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 29000,
     sellingPriceRupees: 33999,
     stockQuantity: 9,
@@ -115,6 +123,7 @@ const sampleProducts: SeedProduct[] = [
     brand: 'Apple',
     model: 'AirPods Pro 2',
     color: 'White',
+    imageUrl: 'https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 20000,
     sellingPriceRupees: 23990,
     stockQuantity: 6,
@@ -126,6 +135,7 @@ const sampleProducts: SeedProduct[] = [
     brand: 'Samsung',
     model: 'Buds2 Pro',
     color: 'Graphite',
+    imageUrl: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 12000,
     sellingPriceRupees: 14999,
     stockQuantity: 7,
@@ -137,6 +147,7 @@ const sampleProducts: SeedProduct[] = [
     brand: 'OnePlus',
     model: 'Bullets Z2',
     color: 'Magico Black',
+    imageUrl: 'https://images.unsplash.com/photo-1572536147248-ac59a8abfa4b?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 1450,
     sellingPriceRupees: 1899,
     stockQuantity: 28,
@@ -148,6 +159,7 @@ const sampleProducts: SeedProduct[] = [
     brand: 'boAt',
     model: 'Rockerz 450',
     color: 'Luscious Black',
+    imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 950,
     sellingPriceRupees: 1499,
     stockQuantity: 34,
@@ -159,6 +171,7 @@ const sampleProducts: SeedProduct[] = [
     brand: 'boAt',
     model: 'Airdopes 141',
     color: 'Bold Black',
+    imageUrl: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 850,
     sellingPriceRupees: 1299,
     stockQuantity: 1, // LOW STOCK TRIGGER
@@ -170,6 +183,7 @@ const sampleProducts: SeedProduct[] = [
     brand: 'Sony',
     model: 'WH-CH520',
     color: 'Black',
+    imageUrl: 'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 3600,
     sellingPriceRupees: 4490,
     stockQuantity: 11,
@@ -183,6 +197,7 @@ const sampleProducts: SeedProduct[] = [
     brand: 'Apple',
     model: 'MHJE3HN/A',
     color: 'White',
+    imageUrl: 'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 1400,
     sellingPriceRupees: 1900,
     stockQuantity: 30,
@@ -194,6 +209,7 @@ const sampleProducts: SeedProduct[] = [
     brand: 'Samsung',
     model: 'EP-TA800',
     color: 'Black',
+    imageUrl: 'https://images.unsplash.com/photo-1622445262464-84b1456045b6?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 850,
     sellingPriceRupees: 1299,
     stockQuantity: 42,
@@ -205,6 +221,7 @@ const sampleProducts: SeedProduct[] = [
     brand: 'Anker',
     model: '511 Nano 3',
     color: 'White',
+    imageUrl: 'https://images.unsplash.com/photo-1585338107529-13afc5f02586?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 1100,
     sellingPriceRupees: 1599,
     stockQuantity: 14,
@@ -216,6 +233,7 @@ const sampleProducts: SeedProduct[] = [
     brand: 'boAt',
     model: 'Rugged v3',
     color: 'Black',
+    imageUrl: 'https://images.unsplash.com/photo-1541658016709-82535e94bc69?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 160,
     sellingPriceRupees: 349,
     stockQuantity: 55,
@@ -227,6 +245,7 @@ const sampleProducts: SeedProduct[] = [
     brand: 'Portronics',
     model: 'Konnect 3-in-1',
     color: 'Grey',
+    imageUrl: 'https://images.unsplash.com/photo-1616401784845-180882ba9ba8?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 190,
     sellingPriceRupees: 399,
     stockQuantity: 40,
@@ -238,6 +257,7 @@ const sampleProducts: SeedProduct[] = [
     brand: 'Ambrane',
     model: 'ACT-60',
     color: 'Black',
+    imageUrl: 'https://images.unsplash.com/photo-1588508065123-287b28e013da?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 140,
     sellingPriceRupees: 299,
     stockQuantity: 3, // LOW STOCK TRIGGER
@@ -251,6 +271,7 @@ const sampleProducts: SeedProduct[] = [
     brand: 'Xiaomi',
     model: 'Power Bank 3i',
     color: 'Sandstone Black',
+    imageUrl: 'https://images.unsplash.com/photo-1609592426861-5517e57c8d9e?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 1650,
     sellingPriceRupees: 2199,
     stockQuantity: 18,
@@ -262,6 +283,7 @@ const sampleProducts: SeedProduct[] = [
     brand: 'URBN',
     model: 'UPB202',
     color: 'Camo Green',
+    imageUrl: 'https://images.unsplash.com/photo-1624823183493-4e38600c9e6c?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 1400,
     sellingPriceRupees: 1899,
     stockQuantity: 15,
@@ -273,6 +295,7 @@ const sampleProducts: SeedProduct[] = [
     brand: 'Ambrane',
     model: 'Aerosync PB-10',
     color: 'Metallic Grey',
+    imageUrl: 'https://images.unsplash.com/photo-1618577462036-7c64b6ff9ff0?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 1350,
     sellingPriceRupees: 1999,
     stockQuantity: 8,
@@ -286,6 +309,7 @@ const sampleProducts: SeedProduct[] = [
     brand: 'Caseology',
     model: 'iPhone 15',
     color: 'Midnight Blue',
+    imageUrl: 'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 180,
     sellingPriceRupees: 499,
     stockQuantity: 25,
@@ -297,6 +321,7 @@ const sampleProducts: SeedProduct[] = [
     brand: 'Spigen',
     model: 'Galaxy S24',
     color: 'Matte Black',
+    imageUrl: 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 290,
     sellingPriceRupees: 699,
     stockQuantity: 20,
@@ -308,6 +333,7 @@ const sampleProducts: SeedProduct[] = [
     brand: 'OnePlus',
     model: '12R',
     color: 'Sandstone Black',
+    imageUrl: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 220,
     sellingPriceRupees: 599,
     stockQuantity: 16,
@@ -319,6 +345,7 @@ const sampleProducts: SeedProduct[] = [
     brand: 'Generic',
     model: 'Note 13',
     color: 'Transparent',
+    imageUrl: 'https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 80,
     sellingPriceRupees: 249,
     stockQuantity: 45,
@@ -331,6 +358,7 @@ const sampleProducts: SeedProduct[] = [
     category: 'Screen Protectors',
     brand: 'Spigen',
     model: 'iPhone 15',
+    imageUrl: 'https://images.unsplash.com/photo-1605236453806-6ff36851218e?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 120,
     sellingPriceRupees: 399,
     stockQuantity: 50,
@@ -341,6 +369,7 @@ const sampleProducts: SeedProduct[] = [
     category: 'Screen Protectors',
     brand: 'CurvedPro',
     model: 'Galaxy S24',
+    imageUrl: 'https://images.unsplash.com/photo-1574944985070-8f3ebc6b79d2?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 190,
     sellingPriceRupees: 599,
     stockQuantity: 22,
@@ -351,6 +380,7 @@ const sampleProducts: SeedProduct[] = [
     category: 'Screen Protectors',
     brand: 'PrivacyShield',
     model: 'Universal 6.7"',
+    imageUrl: 'https://images.unsplash.com/photo-1512499617640-c74ae3a79d37?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 140,
     sellingPriceRupees: 449,
     stockQuantity: 30,
@@ -364,6 +394,7 @@ const sampleProducts: SeedProduct[] = [
     brand: 'Portronics',
     model: 'Clamp M',
     color: 'Black',
+    imageUrl: 'https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 220,
     sellingPriceRupees: 499,
     stockQuantity: 19,
@@ -375,6 +406,7 @@ const sampleProducts: SeedProduct[] = [
     brand: 'Ambrane',
     model: 'Torq Stand',
     color: 'Silver',
+    imageUrl: 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 280,
     sellingPriceRupees: 599,
     stockQuantity: 24,
@@ -386,6 +418,7 @@ const sampleProducts: SeedProduct[] = [
     brand: 'Generic',
     model: 'OTG-C',
     color: 'Metallic Grey',
+    imageUrl: 'https://images.unsplash.com/photo-1541658016709-82535e94bc69?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 45,
     sellingPriceRupees: 149,
     stockQuantity: 60,
@@ -397,6 +430,7 @@ const sampleProducts: SeedProduct[] = [
     brand: 'Digitek',
     model: 'DRL-10',
     color: 'Black',
+    imageUrl: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&q=80&auto=format&fit=crop',
     purchasePriceRupees: 650,
     sellingPriceRupees: 1199,
     stockQuantity: 8,
@@ -458,6 +492,7 @@ async function seedDatabase() {
           model: item.model || '',
           storage: item.storage || '',
           color: item.color || '',
+          imageUrl: item.imageUrl || '',
           purchasePrice: rupeesToPaise(item.purchasePriceRupees),
           sellingPrice: rupeesToPaise(item.sellingPriceRupees),
           stockQuantity: item.stockQuantity,
@@ -479,7 +514,18 @@ async function seedDatabase() {
       }
       console.log('✅ Products catalogue seeded successfully with audit logs.');
     } else {
-      console.log(`ℹ️ Products catalogue already contains ${productCount} items, skipping duplicate product insertion.`);
+      console.log(`ℹ️ Products catalogue already contains ${productCount} items, updating images...`);
+    }
+
+    // Ensure all products have their imageUrl synchronized
+    console.log('🖼️ Synchronizing product images...');
+    for (const item of sampleProducts) {
+      if (item.imageUrl) {
+        await Product.updateMany(
+          { name: item.name, brand: item.brand },
+          { $set: { imageUrl: item.imageUrl } }
+        );
+      }
     }
 
     // 4. Seed initial sales if no sales exist so that Dashboard and Reports immediately show real data

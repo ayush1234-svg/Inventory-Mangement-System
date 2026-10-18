@@ -2,6 +2,7 @@ import React from 'react';
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import { CartItem as CartItemType } from '../../types/index.js';
 import { formatCurrency } from '../../utils/format.js';
+import { ProductImage } from '../common/ProductImage.js';
 
 interface CartItemProps {
   item: CartItemType;
@@ -14,7 +15,16 @@ export const CartItemRow: React.FC<CartItemProps> = ({ item, onUpdateQuantity, o
   const isMaxStock = item.quantity >= item.product.stockQuantity;
 
   return (
-    <div className="flex items-center justify-between gap-3 p-3 bg-white border border-slate-200 rounded-lg shadow-xs hover:border-slate-300 transition-colors">
+    <div className="flex items-center justify-between gap-2.5 p-2.5 bg-white border border-slate-200 rounded-lg shadow-xs hover:border-slate-300 transition-colors">
+      <div className="w-10 h-10 rounded-md bg-slate-50 border border-slate-200 p-1 shrink-0 overflow-hidden flex items-center justify-center">
+        <ProductImage
+          src={item.product.imageUrl}
+          alt={item.product.name}
+          category={item.product.category}
+          className="w-full h-full object-contain"
+        />
+      </div>
+
       <div className="min-w-0 flex-1">
         <h5 className="text-xs font-semibold text-slate-900 truncate">
           {item.product.name}

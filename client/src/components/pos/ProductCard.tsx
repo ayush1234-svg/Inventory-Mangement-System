@@ -1,17 +1,12 @@
 import React from 'react';
 import {
-  Headphones,
-  Package,
   Plus,
   ShieldAlert,
-  Smartphone,
-  Sparkles,
-  Usb,
-  Zap,
 } from 'lucide-react';
 import { Product } from '../../types/index.js';
 import { formatCurrency } from '../../utils/format.js';
 import { StockStatusBadge } from '../common/Badge.js';
+import { ProductImage } from '../common/ProductImage.js';
 
 interface ProductCardProps {
   product: Product;
@@ -27,24 +22,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const isOutOfStock = product.stockQuantity <= 0;
   const isMaxInCart = cartQuantity >= product.stockQuantity;
 
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case 'Smartphones':
-        return <Smartphone className="w-5 h-5 text-indigo-600" />;
-      case 'Audio & Headphones':
-        return <Headphones className="w-5 h-5 text-indigo-600" />;
-      case 'Cables & Chargers':
-        return <Zap className="w-5 h-5 text-amber-600" />;
-      case 'Power Banks':
-        return <Usb className="w-5 h-5 text-emerald-600" />;
-      case 'Cases & Covers':
-      case 'Screen Protectors':
-        return <Sparkles className="w-5 h-5 text-sky-600" />;
-      default:
-        return <Package className="w-5 h-5 text-slate-500" />;
-    }
-  };
-
   return (
     <div
       onClick={() => {
@@ -52,7 +29,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           onAddToCart(product);
         }
       }}
-      className={`group relative flex flex-col justify-between p-3.5 rounded-lg border bg-white transition-all select-none ${
+      className={`group relative flex flex-col justify-between p-3 rounded-lg border bg-white transition-all select-none ${
         isOutOfStock
           ? 'opacity-60 border-slate-200 cursor-not-allowed bg-slate-50/50'
           : isMaxInCart
@@ -61,16 +38,21 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       }`}
     >
       <div>
-        {/* Header with Category Icon and Stock Badge */}
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <div className="w-8 h-8 rounded-md bg-slate-100 flex items-center justify-center shrink-0">
-            {getCategoryIcon(product.category)}
-          </div>
-          <StockStatusBadge
-            stock={product.stockQuantity}
-            threshold={product.lowStockThreshold}
-            isArchived={product.isArchived}
+        {/* Product Image & Stock Badge Header */}
+        <div className="relative w-full h-32 rounded-md bg-slate-50 border border-slate-100 overflow-hidden mb-2.5 p-2 flex items-center justify-center">
+          <ProductImage
+            src={product.imageUrl}
+            alt={product.name}
+            category={product.category}
+            className="w-full h-full object-contain transition-transform duration-200 group-hover:scale-105"
           />
+          <div className="absolute top-2 right-2">
+            <StockStatusBadge
+              stock={product.stockQuantity}
+              threshold={product.lowStockThreshold}
+              isArchived={product.isArchived}
+            />
+          </div>
         </div>
 
         {/* Product Details */}

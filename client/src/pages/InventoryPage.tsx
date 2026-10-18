@@ -13,6 +13,7 @@ import { Button } from '../components/common/Button.js';
 import { EmptyState } from '../components/common/EmptyState.js';
 import { Spinner } from '../components/common/Spinner.js';
 import { useToast } from '../components/common/Toast.js';
+import { ProductImage } from '../components/common/ProductImage.js';
 import { ProductModal } from '../components/inventory/ProductModal.js';
 import { StockModal } from '../components/inventory/StockModal.js';
 import * as productService from '../services/products.js';
@@ -256,14 +257,26 @@ export const InventoryPage: React.FC = () => {
                       prod.isArchived ? 'opacity-60 bg-slate-50/30' : ''
                     }`}
                   >
-                    <td className="py-3.5 px-4 font-semibold text-slate-900">
-                      <div>{prod.name}</div>
-                      {(prod.storage || prod.color) && (
-                        <div className="text-[11px] text-slate-500 font-normal mt-0.5">
-                          {prod.storage && <span className="mr-1.5">{prod.storage}</span>}
-                          {prod.color && <span>({prod.color})</span>}
+                    <td className="py-3 px-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-slate-50 border border-slate-200 p-1 shrink-0 overflow-hidden flex items-center justify-center">
+                          <ProductImage
+                            src={prod.imageUrl}
+                            alt={prod.name}
+                            category={prod.category}
+                            className="w-full h-full object-contain"
+                          />
                         </div>
-                      )}
+                        <div className="min-w-0">
+                          <div className="font-semibold text-slate-900 truncate">{prod.name}</div>
+                          {(prod.storage || prod.color) && (
+                            <div className="text-[11px] text-slate-500 font-normal mt-0.5">
+                              {prod.storage && <span className="mr-1.5">{prod.storage}</span>}
+                              {prod.color && <span>({prod.color})</span>}
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </td>
 
                     <td className="py-3.5 px-4 text-slate-600">{prod.category}</td>
