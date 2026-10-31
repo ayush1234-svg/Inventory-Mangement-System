@@ -41,7 +41,4 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_BASE_URL
-        fromService:
-          type: web
-          name: wtl-inventory-api
-          property: url
+        value: https://wtl-inventory-api.onrender.com
