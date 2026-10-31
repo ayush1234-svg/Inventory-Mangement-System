@@ -1,4 +1,3 @@
-import bcrypt from 'bcryptjs';
 import mongoose from 'mongoose';
 import { connectDB, disconnectDB } from '../config/db.js';
 import { Product } from '../models/Product.js';
@@ -6,6 +5,7 @@ import { Sale } from '../models/Sale.js';
 import { Settings } from '../models/Settings.js';
 import { StockAdjustment } from '../models/StockAdjustment.js';
 import { User } from '../models/User.js';
+import { ensureInitialOwner } from '../services/authService.js';
 import { rupeesToPaise } from '../utils/money.js';
 
 interface SeedProduct {
@@ -442,6 +442,8 @@ async function seedDatabase() {
   try {
     console.log('🌱 Starting database seeding...');
     await connectDB();
+    await ensureInitialOwner();
+    const ownerUser = await User.findOne({ role: 'owner' });
 
     // 1. Seed or update default Settings
     let settings = await Settings.findOne();
@@ -464,22 +466,7 @@ async function seedDatabase() {
       console.log('⚙️ Default shop settings configured (18% GST enabled, INR)');
     }
 
-    // 2. Seed Shop Owner User
-    const existingOwner = await User.findOne({ email: 'owner@wtlmobile.com' });
-    let ownerUser = existingOwner;
-    if (!existingOwner) {
-      const salt = await bcrypt.genSalt(10);
-      const passwordHash = await bcrypt.hash('adminPassword123!', salt);
-      ownerUser = await User.create({
-        name: 'WTL Store Manager',
-        email: 'owner@wtlmobile.com',
-        passwordHash,
-        role: 'owner',
-      });
-      console.log('👤 Shop Owner created: owner@wtlmobile.com / adminPassword123!');
-    }
-
-    // 3. Clear existing Products and StockAdjustments for clean initial seeding
+    // 2. Seed products and stock adjustments for the demo database
     const productCount = await Product.countDocuments();
     if (productCount === 0) {
       console.log(`📦 Seeding ${sampleProducts.length} realistic mobile products and accessories...`);

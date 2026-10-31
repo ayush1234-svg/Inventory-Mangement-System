@@ -81,7 +81,7 @@ export const BillSummary: React.FC<BillSummaryProps> = ({
       </div>
 
       {showCustomerFields && (
-        <div className="grid grid-cols-2 gap-2 pt-1 animate-in fade-in duration-150">
+        <div className="grid grid-cols-1 gap-2 pt-1 animate-in fade-in duration-150 sm:grid-cols-2">
           <Input
             placeholder="Customer Name"
             value={customerName}

@@ -7,7 +7,7 @@ export const AppLayout: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
+    <div className="flex h-[100dvh] bg-slate-50 overflow-hidden">
       {/* Sidebar */}
       <Sidebar mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} />
 

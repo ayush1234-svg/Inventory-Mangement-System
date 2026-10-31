@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { KeyRound, Lock, Mail, ShieldCheck, Smartphone } from 'lucide-react';
+import { Lock, Mail, ShieldCheck, Smartphone } from 'lucide-react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { Button } from '../components/common/Button.js';
 import { Input } from '../components/common/Input.js';
@@ -23,11 +23,13 @@ export const LoginPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Validate here as well as using required inputs so the handler handles empty values consistently.
     if (!email || !password) {
       setError('Please provide both email and password.');
       return;
     }
 
+    // Keep the submit button in a loading state until authentication settles.
     setIsLoading(true);
     setError('');
 
@@ -41,12 +43,6 @@ export const LoginPage: React.FC = () => {
     }
   };
 
-  const handleFillDemo = () => {
-    setEmail('owner@wtlmobile.com');
-    setPassword('adminPassword123!');
-    setError('');
-  };
-
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8 select-none">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
@@ -54,6 +50,7 @@ export const LoginPage: React.FC = () => {
           <Smartphone className="w-6 h-6" />
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          {/* Use the configured store name when available, otherwise show the default brand. */}
           {settings?.shopName || 'WTL Mobile Shop'}
         </h1>
         <p className="text-xs text-slate-500 mt-1">
@@ -73,7 +70,7 @@ export const LoginPage: React.FC = () => {
             <Input
               label="Manager Email Address"
               type="email"
-              placeholder="owner@wtlmobile.com"
+              placeholder="admin@yourstore.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               prefixIcon={<Mail className="w-4 h-4" />}
@@ -103,18 +100,6 @@ export const LoginPage: React.FC = () => {
             </Button>
           </form>
 
-          {/* Quick Demo Access Bar */}
-          <div className="mt-6 pt-5 border-t border-slate-100 text-center">
-            <p className="text-xs text-slate-500 mb-2">Default Authorized Account:</p>
-            <button
-              type="button"
-              onClick={handleFillDemo}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold transition-colors border border-indigo-200/60"
-            >
-              <KeyRound className="w-3.5 h-3.5" />
-              <span>Fill Demo Credentials (owner@wtlmobile.com)</span>
-            </button>
-          </div>
         </div>
 
         <div className="text-center mt-6 flex items-center justify-center gap-1.5 text-xs text-slate-400">

@@ -188,9 +188,9 @@ export const PosPage: React.FC = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-5.5rem)] flex flex-col lg:flex-row gap-5 max-w-7xl mx-auto overflow-hidden select-none">
+    <div className="mx-auto flex min-h-[calc(100dvh-8rem)] max-w-7xl flex-col gap-5 overflow-visible select-none lg:h-[calc(100vh-5.5rem)] lg:min-h-0 lg:flex-row lg:overflow-hidden">
       {/* ================= LEFT PANEL: PRODUCT CATALOGUE ================= */}
-      <div className="flex-1 flex flex-col bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+      <div className="flex min-h-[55vh] flex-1 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs lg:min-h-0">
         {/* Top Search & Filter Bar */}
         <div className="p-4 border-b border-slate-200 space-y-3 bg-white z-10 shrink-0">
           <div className="relative">
@@ -259,7 +259,7 @@ export const PosPage: React.FC = () => {
       </div>
 
       {/* ================= RIGHT PANEL: ACTIVE BILL ================= */}
-      <div className="w-full lg:w-96 flex flex-col bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden shrink-0">
+      <div className="flex min-h-[60vh] w-full shrink-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs lg:min-h-0 lg:w-96">
         {/* Bill Header */}
         <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
           <div className="flex items-center gap-2">

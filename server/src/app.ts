@@ -3,8 +3,8 @@ import cors from 'cors';
 import express, { Request, Response } from 'express';
 import fs from 'fs';
 import helmet from 'helmet';
-import path from 'path';
 import { env } from './config/env.js';
+import { uploadsDir } from './config/uploads.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import apiRouter from './routes/index.js';
 
@@ -18,13 +18,16 @@ app.use(
 );
 
 // CORS configuration for cross-origin credentials (cookies)
-const allowedOrigins = [
-  env.CLIENT_URL,
-  'http://localhost:5173',
-  'http://localhost:5174',
-  'http://127.0.0.1:5173',
-  'http://127.0.0.1:5174',
-];
+const allowedOrigins =
+  env.NODE_ENV === 'production'
+    ? [env.CLIENT_URL]
+    : [
+        env.CLIENT_URL,
+        'http://localhost:5173',
+        'http://localhost:5174',
+        'http://127.0.0.1:5173',
+        'http://127.0.0.1:5174',
+      ];
 
 app.use(
   cors({
@@ -52,7 +55,6 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Static uploads serving
-const uploadsDir = path.join(process.cwd(), 'uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }

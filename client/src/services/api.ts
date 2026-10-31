@@ -1,4 +1,14 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
+const configuredApiUrl = import.meta.env.VITE_API_BASE_URL || '';
+const API_BASE = configuredApiUrl
+  ? `${configuredApiUrl.replace(/\/+$/, '').replace(/\/api$/, '')}/api`
+  : '/api';
+
+export function resolveImageUrl(imageUrl?: string): string | undefined {
+  if (!imageUrl) return undefined;
+  if (!imageUrl.startsWith('/uploads/')) return imageUrl;
+
+  return new URL(imageUrl, new URL(API_BASE, window.location.origin)).toString();
+}
 
 interface RequestOptions extends RequestInit {
   params?: Record<string, string | number | boolean | undefined>;

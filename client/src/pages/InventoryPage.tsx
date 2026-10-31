@@ -235,7 +235,80 @@ export const InventoryPage: React.FC = () => {
             />
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+            <div className="space-y-3 p-3 md:hidden">
+              {products.map((prod) => (
+                <article key={prod._id} className="rounded-lg border border-slate-200 bg-white p-3">
+                  <div className="flex items-start gap-3">
+                    <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 p-1">
+                      <ProductImage
+                        src={prod.imageUrl}
+                        alt={prod.name}
+                        category={prod.category}
+                        className="h-full w-full object-contain"
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="break-words text-sm font-semibold text-slate-900">{prod.name}</h3>
+                      <p className="mt-0.5 text-xs text-slate-500">
+                        {prod.brand}{prod.model ? ` · ${prod.model}` : ''}
+                      </p>
+                      <p className="mt-0.5 text-xs text-slate-500">{prod.category}</p>
+                    </div>
+                    <StockStatusBadge
+                      stock={prod.stockQuantity}
+                      threshold={prod.lowStockThreshold}
+                      isArchived={prod.isArchived}
+                    />
+                  </div>
+                  <div className="mt-3 grid grid-cols-2 gap-2 border-t border-slate-100 pt-3 text-xs">
+                    <div>
+                      <span className="block text-slate-500">Selling price</span>
+                      <span className="font-semibold text-slate-900">{formatCurrency(prod.sellingPrice)}</span>
+                    </div>
+                    <div>
+                      <span className="block text-slate-500">Stock</span>
+                      <span className="font-semibold text-slate-900">{prod.stockQuantity} units</span>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex items-center justify-end gap-2 border-t border-slate-100 pt-2">
+                    <button
+                      onClick={() => setStockModalProduct(prod)}
+                      aria-label={`Adjust stock for ${prod.name}`}
+                      className="rounded-md p-2 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600"
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setEditingProduct(prod);
+                        setIsProductModalOpen(true);
+                      }}
+                      aria-label={`Edit ${prod.name}`}
+                      className="rounded-md p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => handleToggleArchive(prod)}
+                      aria-label={prod.isArchived ? `Restore ${prod.name}` : `Archive ${prod.name}`}
+                      className={`rounded-md p-2 ${
+                        prod.isArchived
+                          ? 'text-emerald-600 hover:bg-emerald-50'
+                          : 'text-slate-500 hover:bg-rose-50 hover:text-rose-600'
+                      }`}
+                    >
+                      {prod.isArchived ? (
+                        <ArchiveRestore className="h-4 w-4" />
+                      ) : (
+                        <Archive className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+            <div className="hidden overflow-x-auto md:block">
             <table className="w-full text-left text-xs sm:text-sm border-collapse">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[11px]">
@@ -348,7 +421,8 @@ export const InventoryPage: React.FC = () => {
                 ))}
               </tbody>
             </table>
-          </div>
+            </div>
+          </>
         )}
 
         {/* Pagination Footer */}

@@ -34,17 +34,23 @@ export async function getMe(userId: string): Promise<IUser | null> {
 export async function ensureInitialOwner(): Promise<void> {
   const count = await User.countDocuments();
   if (count === 0) {
-    const defaultPassword = 'adminPassword123!';
+    const { INITIAL_ADMIN_NAME, INITIAL_ADMIN_EMAIL, INITIAL_ADMIN_PASSWORD } = env;
+    if (!INITIAL_ADMIN_NAME || !INITIAL_ADMIN_EMAIL || !INITIAL_ADMIN_PASSWORD) {
+      throw new Error(
+        'No owner account exists. Configure INITIAL_ADMIN_NAME, INITIAL_ADMIN_EMAIL, and INITIAL_ADMIN_PASSWORD before starting the server.'
+      );
+    }
+
     const salt = await bcrypt.genSalt(10);
-    const passwordHash = await bcrypt.hash(defaultPassword, salt);
+    const passwordHash = await bcrypt.hash(INITIAL_ADMIN_PASSWORD, salt);
 
     await User.create({
-      name: 'Shop Owner',
-      email: 'owner@wtlmobile.com',
+      name: INITIAL_ADMIN_NAME,
+      email: INITIAL_ADMIN_EMAIL,
       passwordHash,
       role: 'owner',
     });
 
-    console.log('👤 Initial Shop Owner account seeded: owner@wtlmobile.com / adminPassword123!');
+    console.log('Initial owner account created from deployment configuration.');
   }
 }

@@ -101,9 +101,10 @@ Verify your `server/.env` parameters:
 PORT=5000
 NODE_ENV=development
 MONGODB_URI=mongodb://localhost:27017/wtl_inventory
-JWT_SECRET=wtl_inventory_jwt_secure_secret_key_change_in_production_32chars
 CLIENT_URL=http://localhost:5173
 ```
+
+Set a private random `JWT_SECRET` of at least 16 characters in `server/.env`. For an empty database, also add `INITIAL_ADMIN_NAME`, `INITIAL_ADMIN_EMAIL`, and a private `INITIAL_ADMIN_PASSWORD` (at least 16 characters). Use your own values; never commit the file.
 
 ### Step 2: Install Dependencies
 
@@ -117,20 +118,11 @@ cd ../client
 npm install
 ```
 
-### Step 3: Seed Catalogue and Initial Owner
+### Step 3: Start with a private owner account
 
-Run the database seeder to configure default shop settings (18% GST enabled, INR currency), create the primary store owner account, and populate 33 realistic mobile phone and accessory catalogue items:
+When the server first connects to an empty database, it creates the owner account using `INITIAL_ADMIN_NAME`, `INITIAL_ADMIN_EMAIL`, and `INITIAL_ADMIN_PASSWORD` from `server/.env`. Choose these credentials privately and do not commit or share the `.env` file. The server initializes default shop settings but does not add products or sales; add your real inventory in the app.
 
-```bash
-cd server
-npm run seed
-```
-
-**Default Owner Credentials:**
-- **Email**: `owner@wtlmobile.com`
-- **Password**: `adminPassword123!`
-
-*(Note: The login page includes a one-click "Fill Demo Credentials" button for testing).*
+`npm run seed` is only for a disposable demo database: it adds sample products and sales. Do not run it against a real store database.
 
 ### Step 4: Run Development Servers
 
@@ -190,9 +182,12 @@ NODE_ENV=production npm start
 ```
 
 ### Deployment Strategy
-1. **Frontend**: Deploy `client/dist/` to any static hosting service (Cloudflare Pages, Vercel, Netlify, or AWS S3 + CloudFront). Configure `VITE_API_BASE_URL` to point to your live backend domain (e.g., `https://api.yourstoredomain.com/api`).
-2. **Backend**: Deploy `server/` to Node.js platforms (Render, Railway, Fly.io, AWS Elastic Beanstalk, or a VPS with PM2). Set environment variables (`MONGODB_URI`, `JWT_SECRET`, `CLIENT_URL`, `NODE_ENV=production`).
-3. **Database**: Use a free or dedicated cluster on MongoDB Atlas. In Atlas, configure Network Access with your server's IP.
+1. **Database**: Create a MongoDB Atlas cluster and database user. Configure Network Access to allow the backend host to connect.
+2. **Backend**: The root `render.yaml` Blueprint defines a Render Node web service. Set its secret `MONGODB_URI` to your Atlas connection string and enter a private admin name, email, and password when prompted. The Blueprint generates a `JWT_SECRET` and allows the frontend origin `https://wtl-inventory-client.onrender.com`; keep that Render static-site name unless you also update `CLIENT_URL`.
+3. **Persistent product images**: The Blueprint attaches a 1 GB persistent disk at `/var/data` and stores uploads in `/var/data/uploads`. Render requires a paid web-service plan to attach persistent disks.
+4. **Frontend**: The Blueprint also defines a Render static site, configures its API URL from the deployed backend, and rewrites page routes to `index.html` for React Router refreshes.
+
+Before sharing the site with a client, configure the secrets in Render, use a real Atlas database, verify its network access, and test login, product creation, photo uploads, sales, and page refreshes on the deployed HTTPS URLs. The product form supports choosing a photo or taking one with a phone camera.
 
 ---
 

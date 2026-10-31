@@ -94,7 +94,7 @@ export const SalesHistoryPage: React.FC = () => {
         </div>
 
         {/* Date Filter & Payment Method */}
-        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+        <div className="flex w-full flex-wrap items-center gap-2 md:w-auto">
           <input
             type="date"
             value={startDate}
@@ -102,7 +102,7 @@ export const SalesHistoryPage: React.FC = () => {
               setStartDate(e.target.value);
               setPage(1);
             }}
-            className="text-xs sm:text-sm border border-slate-300 rounded-lg px-2.5 py-1.5 bg-white text-slate-700 focus:outline-none"
+            className="min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-2 py-2 text-xs text-slate-700 focus:outline-none sm:flex-none sm:px-2.5 sm:text-sm"
             title="Start Date"
           />
 
@@ -115,7 +115,7 @@ export const SalesHistoryPage: React.FC = () => {
               setEndDate(e.target.value);
               setPage(1);
             }}
-            className="text-xs sm:text-sm border border-slate-300 rounded-lg px-2.5 py-1.5 bg-white text-slate-700 focus:outline-none"
+            className="min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-2 py-2 text-xs text-slate-700 focus:outline-none sm:flex-none sm:px-2.5 sm:text-sm"
             title="End Date"
           />
 
@@ -125,7 +125,7 @@ export const SalesHistoryPage: React.FC = () => {
               setPaymentMethod(e.target.value);
               setPage(1);
             }}
-            className="text-xs sm:text-sm border border-slate-300 rounded-lg px-3 py-2 bg-white text-slate-700 focus:outline-none"
+            className="min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-2 py-2 text-xs text-slate-700 focus:outline-none sm:flex-none sm:px-3 sm:text-sm"
           >
             <option value="all">All Payment Methods</option>
             <option value="cash">Cash</option>
@@ -164,7 +164,55 @@ export const SalesHistoryPage: React.FC = () => {
             />
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+            <div className="space-y-3 p-3 md:hidden">
+              {sales.map((sale) => (
+                <article key={sale._id} className="rounded-lg border border-slate-200 bg-white p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h3 className="break-all font-mono text-sm font-bold text-slate-900">
+                        {sale.invoiceNumber}
+                      </h3>
+                      <p className="mt-1 text-xs text-slate-500">{formatDateTime(sale.date)}</p>
+                    </div>
+                    <PaymentBadge method={sale.paymentMethod} />
+                  </div>
+                  <div className="mt-3 grid grid-cols-2 gap-2 border-t border-slate-100 pt-3 text-xs">
+                    <div>
+                      <span className="block text-slate-500">Customer</span>
+                      <span className="break-words font-medium text-slate-800">
+                        {sale.customerName || 'Walk-in'}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="block text-slate-500">Items</span>
+                      <span className="font-medium text-slate-800">
+                        {sale.items.reduce((acc, item) => acc + item.quantity, 0)}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="block text-slate-500">Subtotal</span>
+                      <span className="font-medium text-slate-800">{formatCurrency(sale.subtotal)}</span>
+                    </div>
+                    <div>
+                      <span className="block text-slate-500">Final amount</span>
+                      <span className="font-bold text-slate-900">{formatCurrency(sale.finalAmount)}</span>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex justify-end border-t border-slate-100 pt-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setSelectedSale(sale)}
+                      icon={<Eye className="h-3.5 w-3.5" />}
+                    >
+                      View / Print
+                    </Button>
+                  </div>
+                </article>
+              ))}
+            </div>
+            <div className="hidden overflow-x-auto md:block">
             <table className="w-full text-left text-xs sm:text-sm border-collapse">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[11px]">
@@ -235,7 +283,8 @@ export const SalesHistoryPage: React.FC = () => {
                 ))}
               </tbody>
             </table>
-          </div>
+            </div>
+          </>
         )}
 
         {/* Pagination Footer */}

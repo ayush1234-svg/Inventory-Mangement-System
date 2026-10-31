@@ -2,10 +2,10 @@ import crypto from 'crypto';
 import { Request, Response, Router } from 'express';
 import fs from 'fs';
 import path from 'path';
+import { uploadsDir } from '../config/uploads.js';
 import { requireAuth } from '../middleware/auth.js';
 
 const router = Router();
-const uploadsDir = path.join(process.cwd(), 'uploads');
 
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });

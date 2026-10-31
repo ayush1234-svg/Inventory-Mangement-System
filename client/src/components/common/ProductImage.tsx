@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Headphones, Package, Smartphone, Sparkles, Usb, Zap } from 'lucide-react';
+import { resolveImageUrl } from '../../services/api.js';
 
 interface ProductImageProps {
   src?: string;
@@ -25,6 +26,7 @@ export const ProductImage: React.FC<ProductImageProps> = ({
   }, [src]);
 
   const defaultIconClass = iconClassName || 'w-1/2 h-1/2 min-w-4 min-h-4 max-w-8 max-h-8';
+  const imageUrl = resolveImageUrl(src);
 
   const getCategoryIcon = (cat?: string) => {
     switch (cat) {
@@ -55,7 +57,7 @@ export const ProductImage: React.FC<ProductImageProps> = ({
   return (
     <div className={containerClassName}>
       <img
-        src={src}
+        src={imageUrl}
         alt={alt}
         loading="lazy"
         onError={() => setHasError(true)}

@@ -37,6 +37,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [uploadStats, setUploadStats] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const [purchasePriceRupees, setPurchasePriceRupees] = useState<number | ''>('');
   const [sellingPriceRupees, setSellingPriceRupees] = useState<number | ''>('');
@@ -85,8 +86,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
     setErrors({});
   }, [product, isOpen]);
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleImageFile = async (file?: File) => {
     if (!file) return;
 
     setIsUploadingImage(true);
@@ -105,27 +105,18 @@ export const ProductModal: React.FC<ProductModalProps> = ({
     } finally {
       setIsUploadingImage(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
+      if (cameraInputRef.current) cameraInputRef.current.value = '';
     }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    void handleImageFile(e.target.files?.[0]);
   };
 
   const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     const file = e.dataTransfer.files?.[0];
-    if (!file) return;
-
-    setIsUploadingImage(true);
-    setErrors((prev) => ({ ...prev, image: '' }));
-
-    try {
-      const compressed = await compressImage(file);
-      setUploadStats(`${formatBytes(compressed.compressedSize)} (optimized)`);
-      const uploadedUrl = await uploadImage(compressed.dataUrl, file.name);
-      setImageUrl(uploadedUrl);
-    } catch (err: any) {
-      setErrors((prev) => ({ ...prev, image: err.message || 'Failed to process image' }));
-    } finally {
-      setIsUploadingImage(false);
-    }
+    await handleImageFile(file);
   };
 
   const isPhone = category === 'Smartphones' || customCategory === 'Smartphones';
@@ -255,7 +246,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
 
         {/* Product Image Section (Device Storage Upload + URL Option) */}
         <div className="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200 space-y-3">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-700">
               Product Image
             </span>
@@ -300,7 +291,16 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 accept="image/*"
                 onChange={handleFileSelect}
                 className="hidden"
-                id="product-image-file-input"
+                aria-label="Choose a product photo"
+              />
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleFileSelect}
+                className="hidden"
+                aria-label="Take a product photo"
               />
 
               {imageUrl ? (
@@ -320,7 +320,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                       {uploadStats
                         ? uploadStats
                         : imageUrl.startsWith('/uploads/')
-                        ? 'Stored on local server'
+                        ? 'Stored on server'
                         : 'Image loaded'}
                     </p>
                     <div className="flex items-center gap-2 mt-1.5">
@@ -348,13 +348,12 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 </div>
               ) : (
                 <div
-                  onClick={() => fileInputRef.current?.click()}
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={handleDrop}
-                  className={`border-2 border-dashed rounded-lg p-5 text-center cursor-pointer transition-all ${
+                  className={`border-2 border-dashed rounded-lg p-4 text-center transition-all ${
                     isUploadingImage
                       ? 'border-indigo-400 bg-indigo-50/50 cursor-wait'
-                      : 'border-slate-300 hover:border-indigo-400 hover:bg-indigo-50/20 bg-white'
+                      : 'border-slate-300 bg-white hover:border-indigo-400 hover:bg-indigo-50/20'
                   }`}
                 >
                   {isUploadingImage ? (
@@ -368,11 +367,29 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                         <UploadCloud className="w-5 h-5" />
                       </div>
                       <p className="text-xs font-semibold text-slate-800">
-                        Click to browse PC / mobile storage or snap a photo
+                        Add a photo from your device or take one now
                       </p>
                       <p className="text-[11px] text-slate-400 mt-0.5">
                         Supports JPG, PNG, WebP (auto-optimized for instant loading)
                       </p>
+                      <div className="mt-3 flex flex-col justify-center gap-2 sm:flex-row">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          Choose photo
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => cameraInputRef.current?.click()}
+                        >
+                          Take photo
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -407,7 +424,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
             <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-700 block">
               Smartphone Attributes
             </span>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <Input
                 label="Storage"
                 placeholder="e.g. 128GB, 256GB"
