@@ -36,8 +36,10 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   const [imageMode, setImageMode] = useState<'upload' | 'url'>('upload');
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [uploadStats, setUploadStats] = useState<string | null>(null);
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+  const [isCapturingPhoto, setIsCapturingPhoto] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const cameraVideoRef = useRef<HTMLVideoElement>(null);
 
   const [purchasePriceRupees, setPurchasePriceRupees] = useState<number | ''>('');
   const [sellingPriceRupees, setSellingPriceRupees] = useState<number | ''>('');
@@ -86,6 +88,26 @@ export const ProductModal: React.FC<ProductModalProps> = ({
     setErrors({});
   }, [product, isOpen]);
 
+  useEffect(() => {
+    const video = cameraVideoRef.current;
+    if (!video || !cameraStream) return;
+
+    video.srcObject = cameraStream;
+    void video.play().catch(() => {
+      setErrors((prev) => ({ ...prev, image: 'Unable to start the camera preview.' }));
+    });
+
+    return () => {
+      video.srcObject = null;
+      cameraStream.getTracks().forEach((track) => track.stop());
+    };
+  }, [cameraStream]);
+
+  const closeModal = () => {
+    setCameraStream(null);
+    onClose();
+  };
+
   const handleImageFile = async (file?: File) => {
     if (!file) return;
 
@@ -105,7 +127,73 @@ export const ProductModal: React.FC<ProductModalProps> = ({
     } finally {
       setIsUploadingImage(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
-      if (cameraInputRef.current) cameraInputRef.current.value = '';
+    }
+  };
+
+  const startCamera = async () => {
+    setErrors((prev) => ({ ...prev, image: '' }));
+
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setErrors((prev) => ({
+        ...prev,
+        image: 'Camera access is not available in this browser. Use Choose photo instead.',
+      }));
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: { facingMode: { ideal: 'environment' } },
+      });
+      setCameraStream(stream);
+    } catch (err) {
+      const message =
+        err instanceof DOMException && err.name === 'NotAllowedError'
+          ? 'Camera permission was denied. Allow camera access in your browser settings, or use Choose photo.'
+          : err instanceof DOMException && err.name === 'NotFoundError'
+            ? 'No camera was found on this device. Use Choose photo instead.'
+            : 'Could not open the camera. Use Choose photo instead.';
+      setErrors((prev) => ({ ...prev, image: message }));
+    }
+  };
+
+  const capturePhoto = async () => {
+    const video = cameraVideoRef.current;
+    if (!video || !video.videoWidth || !video.videoHeight) {
+      setErrors((prev) => ({ ...prev, image: 'The camera is not ready yet. Try again in a moment.' }));
+      return;
+    }
+
+    setIsCapturingPhoto(true);
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const context = canvas.getContext('2d');
+      if (!context) throw new Error('Unable to capture an image from the camera.');
+
+      context.drawImage(video, 0, 0);
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob(
+          (capturedBlob) =>
+            capturedBlob
+              ? resolve(capturedBlob)
+              : reject(new Error('Unable to capture an image from the camera.')),
+          'image/jpeg',
+          0.92,
+        );
+      });
+
+      setCameraStream(null);
+      await handleImageFile(new File([blob], `product-photo-${Date.now()}.jpg`, { type: blob.type }));
+    } catch (err) {
+      setErrors((prev) => ({
+        ...prev,
+        image: err instanceof Error ? err.message : 'Unable to capture a photo.',
+      }));
+    } finally {
+      setIsCapturingPhoto(false);
     }
   };
 
@@ -165,7 +253,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
       }
 
       await onSubmit(payload);
-      onClose();
+      closeModal();
     } catch (err: any) {
       setErrors({ form: err.message || 'Failed to save product.' });
     } finally {
@@ -181,7 +269,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={closeModal}
       title={isEditing ? 'Edit Product Details' : 'Add New Product to Catalogue'}
       description={
         isEditing
@@ -293,15 +381,6 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 className="hidden"
                 aria-label="Choose a product photo"
               />
-              <input
-                ref={cameraInputRef}
-                type="file"
-                accept="image/*"
-                capture="environment"
-                onChange={handleFileSelect}
-                className="hidden"
-                aria-label="Take a product photo"
-              />
 
               {imageUrl ? (
                 <div className="flex items-center gap-3 p-2.5 bg-white rounded-lg border border-slate-200">
@@ -356,7 +435,38 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                       : 'border-slate-300 bg-white hover:border-indigo-400 hover:bg-indigo-50/20'
                   }`}
                 >
-                  {isUploadingImage ? (
+                  {cameraStream ? (
+                    <div className="space-y-3">
+                      <video
+                        ref={cameraVideoRef}
+                        autoPlay
+                        muted
+                        playsInline
+                        aria-label="Live camera preview"
+                        className="mx-auto max-h-72 w-full rounded-lg bg-black object-contain"
+                      />
+                      <div className="flex justify-center gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCameraStream(null)}
+                          disabled={isCapturingPhoto}
+                        >
+                          Cancel camera
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="primary"
+                          size="sm"
+                          onClick={() => void capturePhoto()}
+                          isLoading={isCapturingPhoto}
+                        >
+                          Capture photo
+                        </Button>
+                      </div>
+                    </div>
+                  ) : isUploadingImage ? (
                     <div className="flex flex-col items-center justify-center py-2 text-indigo-600">
                       <Loader2 className="w-6 h-6 animate-spin mb-1.5" />
                       <span className="text-xs font-semibold">Optimizing & Uploading image...</span>
@@ -385,7 +495,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                           type="button"
                           variant="outline"
                           size="sm"
-                          onClick={() => cameraInputRef.current?.click()}
+                          onClick={() => void startCamera()}
                         >
                           Take photo
                         </Button>
@@ -512,7 +622,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
         </div>
 
         <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
-          <Button variant="outline" type="button" onClick={onClose} disabled={isSubmitting}>
+          <Button variant="outline" type="button" onClick={closeModal} disabled={isSubmitting}>
             Cancel
           </Button>
           <Button variant="primary" type="submit" isLoading={isSubmitting}>
