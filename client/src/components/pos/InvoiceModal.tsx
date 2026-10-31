@@ -1,6 +1,6 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { CheckCircle2, Download, Plus, Printer, X } from 'lucide-react';
+import { CheckCircle2, Plus, Printer, X } from 'lucide-react';
 import { useSettings } from '../../context/SettingsContext.js';
 import { Sale } from '../../types/index.js';
 import { amountInWords, formatCurrency, formatDateTime, formatPaymentMethod } from '../../utils/format.js';
@@ -55,7 +55,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               size="sm"
               onClick={handlePrint}
               icon={<Printer className="w-3.5 h-3.5" />}
-              className="bg-slate-800 text-white border-slate-700 hover:bg-slate-700 hover:text-white text-xs py-1.5 px-3"
+              className="text-xs py-1.5 px-3"
             >
               Print A5 / PDF
             </Button>
@@ -287,20 +287,6 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
           </div>
         </div>
 
-        {/* Modal Bottom Actions (Excluded in Print) */}
-        <div className="p-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-3 no-print shrink-0">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handlePrint}
-            icon={<Download className="w-3.5 h-3.5" />}
-          >
-            Save as PDF / Print A5
-          </Button>
-          <Button variant="primary" size="sm" onClick={onStartNewBill} icon={<Plus className="w-3.5 h-3.5" />}>
-            Start New Bill
-          </Button>
-        </div>
       </div>
     </div>,
     document.body

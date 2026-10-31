@@ -2,15 +2,11 @@ services:
   - type: web
     name: wtl-inventory-api
     runtime: node
-    plan: 0.5c-512mb
+    plan: free
     rootDir: server
     buildCommand: npm install && npm run build
     startCommand: npm start
     healthCheckPath: /api/health
-    disk:
-      name: wtl-inventory-uploads
-      mountPath: /var/data
-      sizeGB: 1
     envVars:
       - key: NODE_ENV
         value: production
@@ -19,9 +15,9 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: CLIENT_URL
-        value: https://wtl-inventory-client.onrender.com
+        sync: false
       - key: UPLOADS_DIR
-        value: /var/data/uploads
+        value: uploads
       - key: INITIAL_ADMIN_NAME
         sync: false
       - key: INITIAL_ADMIN_EMAIL
@@ -41,4 +37,5 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_BASE_URL
-        value: https://wtl-inventory-api.onrender.com
+        sync: false
+
