@@ -10,6 +10,8 @@ import { Modal } from '../common/Modal.js';
 import { ProductImage } from '../common/ProductImage.js';
 import { Select } from '../common/Select.js';
 
+const CUSTOM_CATEGORY = '__custom_category__';
+
 interface ProductModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -213,7 +215,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
     const errs: Record<string, string> = {};
     if (!name.trim()) errs.name = 'Product name is required';
     if (!brand.trim()) errs.brand = 'Brand is required';
-    if (category === 'CUSTOM' && !customCategory.trim()) {
+    if (category === CUSTOM_CATEGORY && !customCategory.trim()) {
       errs.category = 'Custom category name is required';
     }
     if (purchasePriceRupees === '' || Number(purchasePriceRupees) < 0) {
@@ -237,7 +239,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
     try {
       const payload: Partial<Product> = {
         name: name.trim(),
-        category: category === 'CUSTOM' ? customCategory.trim() : category,
+        category: category === CUSTOM_CATEGORY ? customCategory.trim() : category,
         brand: brand.trim(),
         model: model.trim(),
         imageUrl: imageUrl.trim() || undefined,
@@ -263,7 +265,6 @@ export const ProductModal: React.FC<ProductModalProps> = ({
 
   const categoryOptions = [
     ...categories.map((c) => ({ label: c, value: c })),
-    { label: '+ Add Custom Category...', value: 'CUSTOM' },
   ];
 
   return (
@@ -290,18 +291,42 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           <div>
             <Select
               label="Category"
-              value={category}
+              value={category === CUSTOM_CATEGORY ? '' : category}
               onChange={(e) => setCategory(e.target.value)}
               options={categoryOptions}
+              disabled={category === CUSTOM_CATEGORY}
             />
-            {category === 'CUSTOM' && (
-              <Input
-                placeholder="Enter new category name"
-                value={customCategory}
-                onChange={(e) => setCustomCategory(e.target.value)}
-                error={errors.category}
-                className="mt-2"
-              />
+            {category === CUSTOM_CATEGORY ? (
+              <div className="mt-2 space-y-2">
+                <Input
+                  placeholder="Enter new category name"
+                  value={customCategory}
+                  onChange={(e) => setCustomCategory(e.target.value)}
+                  error={errors.category}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCategory(categories[0] || 'Smartphones');
+                    setCustomCategory('');
+                  }}
+                  className="text-xs font-medium text-indigo-600 hover:text-indigo-700"
+                >
+                  Choose an existing category
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setCategory(CUSTOM_CATEGORY);
+                  setCustomCategory('');
+                  setErrors((previous) => ({ ...previous, category: '' }));
+                }}
+                className="mt-2 text-xs font-medium text-indigo-600 hover:text-indigo-700"
+              >
+                + Add Custom Category...
+              </button>
             )}
           </div>
 
@@ -388,7 +413,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                     <ProductImage
                       src={imageUrl}
                       alt={name || 'Preview'}
-                      category={category === 'CUSTOM' ? customCategory : category}
+                      category={category === CUSTOM_CATEGORY ? customCategory : category}
                       className="w-full h-full object-contain"
                     />
                   </div>
@@ -512,7 +537,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 <ProductImage
                   src={imageUrl}
                   alt={name || 'Preview'}
-                  category={category === 'CUSTOM' ? customCategory : category}
+                  category={category === CUSTOM_CATEGORY ? customCategory : category}
                   className="w-full h-full object-contain"
                 />
               </div>
