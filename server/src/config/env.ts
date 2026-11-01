@@ -14,6 +14,10 @@ const envSchema = z.object({
   INITIAL_ADMIN_NAME: z.string().trim().min(1).optional(),
   INITIAL_ADMIN_EMAIL: z.string().trim().email().transform((email) => email.toLowerCase()).optional(),
   INITIAL_ADMIN_PASSWORD: z.string().min(16).optional(),
+  // Cloudinary (optional — local disk storage used as fallback when not set)
+  CLOUDINARY_CLOUD_NAME: z.string().optional(),
+  CLOUDINARY_API_KEY: z.string().optional(),
+  CLOUDINARY_API_SECRET: z.string().optional(),
 });
 
 const parsedEnv = envSchema.safeParse(process.cwd() ? process.env : {});

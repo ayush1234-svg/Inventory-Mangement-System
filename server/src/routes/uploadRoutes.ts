@@ -3,13 +3,24 @@ import { Request, Response, Router } from 'express';
 import fs from 'fs';
 import path from 'path';
 import { uploadsDir } from '../config/uploads.js';
+import { cloudinary, cloudinaryEnabled } from '../config/cloudinary.js';
 import { requireAuth } from '../middleware/auth.js';
 
 const router = Router();
 
-if (!fs.existsSync(uploadsDir)) {
+// Only create the local uploads dir when Cloudinary is not configured
+if (!cloudinaryEnabled && !fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
+
+const allowedMimeTypes: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/jpg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'image/gif': 'gif',
+  'image/svg+xml': 'svg',
+};
 
 router.post('/', requireAuth, async (req: Request, res: Response) => {
   try {
@@ -22,7 +33,7 @@ router.post('/', requireAuth, async (req: Request, res: Response) => {
       });
     }
 
-    // Match data:[<mediatype>][;base64],<data>
+    // Match data:<mediatype>[;base64],<data>
     const matches = image.match(/^data:(image\/[a-zA-Z0-9+.-]+);base64,(.+)$/);
     if (!matches) {
       return res.status(400).json({
@@ -34,15 +45,6 @@ router.post('/', requireAuth, async (req: Request, res: Response) => {
     const mimeType = matches[1];
     const base64Data = matches[2];
 
-    const allowedMimeTypes: Record<string, string> = {
-      'image/jpeg': 'jpg',
-      'image/jpg': 'jpg',
-      'image/png': 'png',
-      'image/webp': 'webp',
-      'image/gif': 'gif',
-      'image/svg+xml': 'svg',
-    };
-
     const ext = allowedMimeTypes[mimeType];
     if (!ext) {
       return res.status(400).json({
@@ -52,7 +54,7 @@ router.post('/', requireAuth, async (req: Request, res: Response) => {
     }
 
     const buffer = Buffer.from(base64Data, 'base64');
-    // Limit to 10MB
+    // Limit to 10 MB
     if (buffer.length > 10 * 1024 * 1024) {
       return res.status(400).json({
         success: false,
@@ -64,18 +66,52 @@ router.post('/', requireAuth, async (req: Request, res: Response) => {
     const sanitizedName = filename
       ? path.parse(filename).name.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 30)
       : 'product';
-    const uniqueFilename = `${sanitizedName}_${Date.now()}_${randomSuffix}.${ext}`;
+    const publicId = `${sanitizedName}_${Date.now()}_${randomSuffix}`;
+
+    // ── Cloudinary path ──────────────────────────────────────────────────────
+    if (cloudinaryEnabled) {
+      const uploadResult = await new Promise<{ secure_url: string; public_id: string }>(
+        (resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            {
+              folder: 'wtl-inventory',
+              public_id: publicId,
+              resource_type: 'image',
+              // Automatically convert to WebP for smaller sizes
+              format: 'webp',
+              transformation: [{ quality: 'auto', fetch_format: 'auto' }],
+            },
+            (error, result) => {
+              if (error || !result) return reject(error ?? new Error('Cloudinary upload failed'));
+              resolve(result as { secure_url: string; public_id: string });
+            }
+          );
+          uploadStream.end(buffer);
+        }
+      );
+
+      return res.status(201).json({
+        success: true,
+        message: 'Image uploaded successfully.',
+        data: {
+          url: uploadResult.secure_url,        // absolute HTTPS Cloudinary URL
+          filename: uploadResult.public_id,
+          size: buffer.length,
+          mimeType,
+        },
+      });
+    }
+
+    // ── Local disk fallback (development) ────────────────────────────────────
+    const uniqueFilename = `${publicId}.${ext}`;
     const filePath = path.join(uploadsDir, uniqueFilename);
-
     await fs.promises.writeFile(filePath, buffer);
-
-    const relativeUrl = `/uploads/${uniqueFilename}`;
 
     return res.status(201).json({
       success: true,
       message: 'Image uploaded successfully.',
       data: {
-        url: relativeUrl,
+        url: `/uploads/${uniqueFilename}`,    // relative URL resolved by the client
         filename: uniqueFilename,
         size: buffer.length,
         mimeType,
