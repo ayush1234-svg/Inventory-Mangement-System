@@ -262,12 +262,13 @@ export const PosPage: React.FC = () => {
       <div className="flex min-h-[60vh] w-full shrink-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs lg:min-h-0 lg:w-96">
         {/* Bill Header */}
         <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
-          <div className="flex items-center gap-2">
-            <ShoppingCart className="w-5 h-5 text-indigo-600" />
-            <h3 className="text-sm font-bold text-slate-900">Current Bill</h3>
+          <div className="flex min-w-0 items-center gap-2">
+            <ShoppingCart className="h-5 w-5 shrink-0 text-indigo-600" />
+            <h3 className="whitespace-nowrap text-sm font-bold text-slate-900">Current Bill</h3>
             {totalItemCount > 0 && (
-              <span className="text-xs bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded-full">
+              <span className="whitespace-nowrap rounded-full bg-indigo-50 px-2 py-1 text-[10px] font-semibold tabular-nums text-indigo-700 ring-1 ring-inset ring-indigo-100">
                 {totalItemCount}
+                <span className="ml-1">{totalItemCount === 1 ? 'unit' : 'units'}</span>
               </span>
             )}
           </div>
