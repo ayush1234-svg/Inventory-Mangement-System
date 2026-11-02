@@ -51,6 +51,7 @@ export const App: React.FC = () => {
                 }
               >
                 <Route index element={<Navigate to="/billing" replace />} />
+                <Route path="dashboard" element={<DashboardPage />} />
                 <Route path="billing" element={<PosPage />} />
                 <Route path="inventory" element={<InventoryPage />} />
                 <Route path="sales" element={<SalesHistoryPage />} />
@@ -59,7 +60,7 @@ export const App: React.FC = () => {
               </Route>
 
               {/* Catch-all redirect */}
-              <Route path="*" element={<Navigate to="/" replace />} />
+              <Route path="*" element={<Navigate to="/billing" replace />} />
             </Routes>
           </SettingsProvider>
         </AuthProvider>

@@ -24,7 +24,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onCloseMobile }) =
   const { settings } = useSettings();
 
   const navItems = [
-    { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+    { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Billing / POS', path: '/billing', icon: ShoppingCart },
     { name: 'Inventory', path: '/inventory', icon: Package },
     { name: 'Sales History', path: '/sales', icon: History },
@@ -67,7 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onCloseMobile }) =
             <NavLink
               key={item.path}
               to={item.path}
-              end={item.path === '/'}
+              end={true}
               onClick={onCloseMobile}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
