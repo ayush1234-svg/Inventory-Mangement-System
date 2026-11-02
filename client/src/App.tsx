@@ -50,7 +50,7 @@ export const App: React.FC = () => {
                   </RequireAuth>
                 }
               >
-                <Route index element={<DashboardPage />} />
+                <Route index element={<Navigate to="/billing" replace />} />
                 <Route path="billing" element={<PosPage />} />
                 <Route path="inventory" element={<InventoryPage />} />
                 <Route path="sales" element={<SalesHistoryPage />} />

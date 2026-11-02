@@ -16,9 +16,9 @@ export const LoginPage: React.FC = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // If already authenticated, redirect to dashboard
+  // If already authenticated, redirect to billing screen first
   if (user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/billing" replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,7 +35,7 @@ export const LoginPage: React.FC = () => {
 
     try {
       await login(email, password);
-      navigate('/');
+      navigate('/billing');
     } catch (err: any) {
       setError(err.message || 'Invalid login credentials. Please try again.');
     } finally {
